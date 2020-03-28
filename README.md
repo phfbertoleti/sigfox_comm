@@ -1,10 +1,10 @@
-#sigfox_comm tool - official repository
+# sigfox_comm tool - official repository
 
-##Overview
+## Overview
 This is the official repository of sigfox_comm toll, a toll (for Linux / embedded Linux) to communicate to WSSFM11R2D SigFox modem, in order to make it possible to send data from your Linux / Embedded Linux system to SigFox Cloud.
 
 
-##sigfox_comm usage
+## sigfox_comm usage
 
 First of all, ensure your WSSFM11R2D SigFox modem is attached to one of the UART or USB-UART ports of your Linux / Embedded Linux system (example: /dev/ttyO4 or /dev/ttyUSB0). 
 
@@ -30,12 +30,12 @@ And that's it! Some seconds after this command execution, your data (DATA_ARRAY_
 **Important:** SigFox allows 12 bytes as maximum hex (raw) data size to be sent. As this tool uses a hex-string to represent the data to be sent to SigFox Cloud, it should have 24 bytes as maximum size. If a longer hex-string is passed as argument to the tool, it'll be automatically truncated to a 24 bytes hex-string.
 
 
-##Where can I run this tool?
+## Where can I run this tool?
 
 In any Linux System / embedded Linux system you want to, as long as you can attach WSSFM11R2D SigFox modem to a available UART or USB-UART port.
 
 
-##Tests executed
+## Tests executed
 
 This tool has been tested in the following Linux / Embedded Linux systems:
 
