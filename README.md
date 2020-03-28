@@ -6,7 +6,7 @@ This is the official repository of sigfox_comm toll, a toll (for Linux / embedde
 
 ## sigfox_comm usage
 
-First of all, ensure your WSSFM11R2D SigFox modem is attached to one of the UART or USB-UART ports of your Linux / Embedded Linux system (example: /dev/ttyO4 or /dev/ttyUSB0). 
+First of all, ensure your SigFox modem is activated to be used in SigFox Cloud. Also, ensure your WSSFM11R2D SigFox modem is attached to one of the UART or USB-UART ports of your Linux / Embedded Linux system (example: /dev/ttyO4 or /dev/ttyUSB0). 
 
 **Waning**: WSSFM11R2D SigFox modem maximum allowed voltage level is 3.3V. DO NOT USE 5V VOLTAGE LEVEL as power supply and/or UART communication
 
