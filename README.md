@@ -39,7 +39,8 @@ In any Linux System / embedded Linux system you want to, as long as you can atta
 
 This tool has been tested in the following Linux / Embedded Linux systems:
 
-* Generic notebook running Ubuntu 16.04LTS Linux Operational System, using a 3.3V USB-Serial converter
-* Pocket Beaglebone board running Debian GNU/Linux 9 (stretch) Linux Operational System
+* Generic notebook, running Ubuntu 16.04LTS Linux Operational System, using a 3.3V USB-Serial converter
+* Pocket Beaglebone board, running Debian GNU/Linux 9 (stretch) Linux Operational System
+* Raspberry Pi Zero W board, running Raspbian GNU/Linux 10 (buster) Linux Operational System, using a 3.3V USB-Serial converter
 
 
