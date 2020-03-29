@@ -43,17 +43,15 @@ int check_macro_channels(void);
 */
 int check_macro_channels(void)
 {
-    char macro_channel_buffer[DATA_ARRAY_FULL_AT_CMD] = {0};    
+    char macro_channel_buffer[DATA_ARRAY_FULL_AT_CMD] = {0};
     char macro_channel_response_buffer[DATA_ARRAY_FULL_AT_CMD] = {0};
     char * ptr_comma = NULL;
     char * ptr_micro_channel_number = NULL;
     char * ptr_macro_channel_number = NULL;
-    int macro_channel_at_command_size = 0;
-    int uart_operation_result = 0; 
+    int uart_operation_result = 0;
     int macro_channel_return = MACRO_CHANNEL_FAIL;
     int macro_channel_number = 0;
     int micro_channel_number = 0;
-    int rcv_data_size = 0;
 
     sigfox_comm_format_at_macro_channel(macro_channel_buffer);
     uart_operation_result = sigfox_comm_uart_send_data(uart_file, macro_channel_buffer, strlen(macro_channel_buffer) );
@@ -67,7 +65,7 @@ int check_macro_channels(void)
     } 
 
     /* Checking available macro channels */ 
-    uart_operation_result = sigfox_comm_uart_rcv_data(uart_file, macro_channel_response_buffer, &rcv_data_size);
+    uart_operation_result = sigfox_comm_uart_rcv_data(uart_file, macro_channel_response_buffer);
     if (uart_operation_result != UART_COMM_SUCESS)
     {
         printf("[ERROR] Error when receiving macro channel at command response. Error code: %d\n", uart_operation_result); 
@@ -128,12 +126,8 @@ int main (int argc, char *argv[])
     int data_array_size = 0;
     int data_array_size_informed = 0;
     int uart_operation_result = 0;
-    int data_return_from_modem_size = 0;
-    char action;
     char array_data_size[DATA_ARRAY_MAX_SIZE+1] = {0}; //24 bytes + '\r' char
     char array_full_at_command[DATA_ARRAY_FULL_AT_CMD] = {0};
-    char array_data_returned_from_sigfox_modem[DATA_SIGFOX_MODEM_RETURN] = {0};
-    char *token_ok = NULL;
 
     /* parse aguments */
     valid_arguments = argc-1;

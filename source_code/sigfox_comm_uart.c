@@ -117,42 +117,39 @@ END_UART_SEND:
 }
 
 /* Function: receive data from SigFox Modem via UART
- * Parameters: pointer to buffer to store data received; size of received data 
- * Return: sucess (UART_COMM_SUCESS) or errors (UART_OPEN_COMM_ERROR or UART_RCV_DATA_ERROR) 
+ * Parameters: pointer to buffer containing UART file; pointer to buffer to store data received
+ * Return: sucess (UART_COMM_SUCESS) or errors (UART_OPEN_COMM_ERROR or UART_RCV_DATA_ERROR)
 */
-int sigfox_comm_uart_rcv_data(char * ptr_uart_path, char * ptr_data, int * ptr_data_rcv_size)
+int sigfox_comm_uart_rcv_data(char * ptr_uart_path, char * ptr_data)
 {
     int function_return = UART_RCV_DATA_ERROR;
     int fd = 0;
-    size_t bytes_received_from_uart = 0;
+    int bytes_received_from_uart = 0;
 
     if (open_and_prepare_uart(ptr_uart_path ,&fd) != UART_PREPARE_SUCESS)
         goto END_UART_READ;
 
     /* Now, UART is set up. Time to read data from it */
-    *ptr_data_rcv_size = 0;
     do
     {
         bytes_received_from_uart = read(fd, ptr_data, 1);
         if (bytes_received_from_uart > 0)
-        {
             ptr_data++;
-            *ptr_data_rcv_size++;
-        }
         else
         {
             if (bytes_received_from_uart < 0)
             {
                 printf("[ERROR] Error when reading data from UART");
-                function_return = UART_RCV_DATA_ERROR;        
+                function_return = UART_RCV_DATA_ERROR;
                 break;
             }
-        }        
-    } while (bytes_received_from_uart > 0);    
+        }
+    } while (bytes_received_from_uart > 0);
 
-    function_return = UART_COMM_SUCESS; 
+    function_return = UART_COMM_SUCESS;
 
 END_UART_READ:
     close(fd);
     return function_return;
 }
+

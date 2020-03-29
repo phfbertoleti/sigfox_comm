@@ -18,6 +18,6 @@
 
 /* Prototypes */ 
 int sigfox_comm_uart_send_data(char * ptr_uart_path, char * ptr_data, int data_size);
-int sigfox_comm_uart_rcv_data(char * ptr_uart_path, char * ptr_data, int * ptr_data_rcv_size);
+int sigfox_comm_uart_rcv_data(char * ptr_uart_path, char * ptr_data);
 
 #endif
