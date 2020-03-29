@@ -21,7 +21,7 @@ It can take some seconds to compile. Then, run sigfox_comm tool as following, re
 
 
 ```
-sudo sigfox_comm UART_FILE_PATH DATA_ARRAY_TO_SEND
+sudo ./sigfox_comm UART_FILE_PATH DATA_ARRAY_TO_SEND
 ```
 
 And that's it! Some seconds after this command execution, your data (DATA_ARRAY_TO_SEND) will be at SigFox Cloud.
