@@ -128,7 +128,8 @@ int main (int argc, char *argv[])
     int uart_operation_result = 0;
     char array_data_size[DATA_ARRAY_MAX_SIZE+1] = {0}; //24 bytes + '\r' char
     char array_full_at_command[DATA_ARRAY_FULL_AT_CMD] = {0};
-
+    char at_wakeup_buffer[DATA_ARRAY_FULL_AT_CMD] = {0};
+    
     /* parse aguments */
     valid_arguments = argc-1;
     
@@ -152,6 +153,11 @@ int main (int argc, char *argv[])
 
     memcpy(array_data_size, argv[DATA_ARD_IDX], data_array_size);   
 
+    /* Send "AT" command to wake up SIgFox module */
+    printf("\n\nWaking-up SigFox module...\n");
+    sigfox_comm_format_at_wake_up(at_wakeup_buffer);
+    sigfox_comm_uart_send_data(uart_file, at_wakeup_buffer, strlen(at_wakeup_buffer) );
+    
     printf("\n\nChecking macro channels...\n");
     if (check_macro_channels() != MACRO_CHANNEL_OK)
     {

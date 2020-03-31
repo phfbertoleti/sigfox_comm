@@ -9,10 +9,19 @@
 #include "sigfox_comm_format_at_cmds.h"
 
 /* AT Commands definitions */
+#define AT_CMD_WAKE_UP_SIGFOX_MODEM          "AT\r"
 #define AT_CMD_CHECK_MICRO_MACRO_CHANNELS    "AT$GI?\r"
 #define AT_CMD_RESET_SIGFOX_RADIO            "AT$RC\r"
 #define AT_CMD_SEND_FRAME                    "AT$SF="
 
+/* Function: format at command to wake-up SigFox modem
+ * Parameters:  - pointer to buffer to store formatted at command
+ * Return: none
+*/
+void sigfox_comm_format_at_wake_up(char * formatted_at_cmd)
+{
+    sprintf(formatted_at_cmd,"%s", AT_CMD_WAKE_UP_SIGFOX_MODEM);
+}
 
 /* Function: format at command to send data to SigFox Cloud
  * Parameters: - pointer to data array to be sent
