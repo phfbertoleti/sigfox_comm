@@ -27,6 +27,9 @@
 #define MACRO_CHANNEL_FAIL           -1
 #define MIN_MICRO_CHANNEL_AVAILABLE   3
 
+/* Timing definitions */
+#define TIME_TO_WAIT_SIGFOX_MODEM_RESPONSE_SEC     3 //s
+
 /* Global variables  */
 char uart_file[20] = {0}; 
 
@@ -60,6 +63,9 @@ int check_macro_channels(int * file_descriptor)
         macro_channel_return = MACRO_CHANNEL_FAIL;
         goto END_MACRO_CHANNEL;
     } 
+
+    /* Wait a little bit for SigFox modem response */ 
+    sleep(TIME_TO_WAIT_SIGFOX_MODEM_RESPONSE_SEC);
 
     /* Checking available macro channels */ 
     uart_operation_result = sigfox_comm_uart_rcv_data(file_descriptor, macro_channel_response_buffer);
