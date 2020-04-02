@@ -12,8 +12,8 @@
 #include <unistd.h>  /* UNIX Standard Definitions 	   */ 
 #include <errno.h>   /* ERROR Number Definitions           */
 
-/* Prototypes */
-int open_and_prepare_uart(char * ptr_uart_path, int * file_descriptor);
+/* General definitions */
+#define MAX_BUFFER_UART_RCV_LOCAL            50
 
 /* Function: open and prepare UART for sending and receiving data in UART configuration needed (9600 8N1)
  * Parameters: pointer to UART file and pointer to UART file descriptor
@@ -89,17 +89,13 @@ END_UART_PREPARE:
  * Parameters: pointer to UART file path; pointer to data to be sent; size of data to be sent
  * Return: sucess (UART_COMM_SUCESS) or errors
 */
-int sigfox_comm_uart_send_data(char * ptr_uart_path, char * ptr_data, int data_size)
+int sigfox_comm_uart_send_data(int * fd, char * ptr_data, int data_size)
 {
-    int function_return = UART_SEND_DATA_ERROR;
-    int fd = 0;
+    int function_return = UART_SEND_DATA_ERROR;    
     ssize_t bytes_written_to_uart = 0;
 
-    if (open_and_prepare_uart(ptr_uart_path ,&fd) != UART_PREPARE_SUCESS)
-        goto END_UART_SEND;
-
     /* Now, UART is set up. Time to write data to it */
-    bytes_written_to_uart = write(fd, ptr_data, data_size);
+    bytes_written_to_uart = write(*fd, ptr_data, data_size);
     if (bytes_written_to_uart != (ssize_t)data_size)
     {
         printf("[ERROR] Cannot write data to UART.");
@@ -112,7 +108,6 @@ int sigfox_comm_uart_send_data(char * ptr_uart_path, char * ptr_data, int data_s
     }
 
 END_UART_SEND:
-    close(fd);
     return function_return;
 }
 
@@ -120,36 +115,24 @@ END_UART_SEND:
  * Parameters: pointer to buffer containing UART file; pointer to buffer to store data received
  * Return: sucess (UART_COMM_SUCESS) or errors (UART_OPEN_COMM_ERROR or UART_RCV_DATA_ERROR)
 */
-int sigfox_comm_uart_rcv_data(char * ptr_uart_path, char * ptr_data)
+int sigfox_comm_uart_rcv_data(int * fd, char * ptr_data)
 {
     int function_return = UART_RCV_DATA_ERROR;
-    int fd = 0;
     int bytes_received_from_uart = 0;
-
-    if (open_and_prepare_uart(ptr_uart_path ,&fd) != UART_PREPARE_SUCESS)
-        goto END_UART_READ;
+    char local_uart_buffer[MAX_BUFFER_UART_RCV_LOCAL] = {0};
 
     /* Now, UART is set up. Time to read data from it */
     do
     {
-        bytes_received_from_uart = read(fd, ptr_data, 1);
-        if (bytes_received_from_uart > 0)
-            ptr_data++;
-        else
-        {
-            if (bytes_received_from_uart < 0)
-            {
-                printf("[ERROR] Error when reading data from UART");
-                function_return = UART_RCV_DATA_ERROR;
-                break;
-            }
-        }
-    } while (bytes_received_from_uart > 0);
+        bytes_received_from_uart = read(*fd, local_uart_buffer, MAX_BUFFER_UART_RCV_LOCAL); 
 
+        if (bytes_received_from_uart > 0)
+            memcpy(ptr_data, local_uart_buffer, bytes_received_from_uart);
+
+    } while (bytes_received_from_uart);
+    
     function_return = UART_COMM_SUCESS;
 
-END_UART_READ:
-    close(fd);
     return function_return;
 }
 

@@ -17,7 +17,8 @@
 #define UART_RCV_DATA_ERROR     -6 
 
 /* Prototypes */ 
-int sigfox_comm_uart_send_data(char * ptr_uart_path, char * ptr_data, int data_size);
-int sigfox_comm_uart_rcv_data(char * ptr_uart_path, char * ptr_data);
+int open_and_prepare_uart(char * ptr_uart_path, int * file_descriptor);
+int sigfox_comm_uart_send_data(int * fd, char * ptr_data, int data_size);
+int sigfox_comm_uart_rcv_data(int * fd, char * ptr_data);
 
 #endif

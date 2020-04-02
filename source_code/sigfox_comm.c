@@ -17,9 +17,6 @@
 #define DATA_ARD_IDX      2
 #define MIN_ARGS_NUMBER   2
 
-/* Actions definitions */
-#define ACTION_SEND_DATA        's'
-
 /* Data definitions */
 #define DATA_ARRAY_MAX_SIZE        24  // 24 bytes hex-string  = 12 bytes raw hex data
 #define DATA_SIGFOX_MODEM_RETURN   200
@@ -34,14 +31,14 @@
 char uart_file[20] = {0}; 
 
 /* Prototypes */
-int check_macro_channels(void);
+int check_macro_channels(int * file_descriptor);
 
 
 /* Function: check if needed macro channels are available
- * Parameters: none             
+ * Parameters: pointer to file descriptor             
  * Return: sucess (MACRO_CHANNEL_OK) or failure (MACRO_CHANNEL_FAIL)
 */
-int check_macro_channels(void)
+int check_macro_channels(int * file_descriptor)
 {
     char macro_channel_buffer[DATA_ARRAY_FULL_AT_CMD] = {0};
     char macro_channel_response_buffer[DATA_ARRAY_FULL_AT_CMD] = {0};
@@ -54,7 +51,7 @@ int check_macro_channels(void)
     int micro_channel_number = 0;
 
     sigfox_comm_format_at_macro_channel(macro_channel_buffer);
-    uart_operation_result = sigfox_comm_uart_send_data(uart_file, macro_channel_buffer, strlen(macro_channel_buffer) );
+    uart_operation_result = sigfox_comm_uart_send_data(file_descriptor, macro_channel_buffer, strlen(macro_channel_buffer) );
 
     /* Checking macro channel command sent status */
     if (uart_operation_result != UART_COMM_SUCESS)
@@ -65,7 +62,7 @@ int check_macro_channels(void)
     } 
 
     /* Checking available macro channels */ 
-    uart_operation_result = sigfox_comm_uart_rcv_data(uart_file, macro_channel_response_buffer);
+    uart_operation_result = sigfox_comm_uart_rcv_data(file_descriptor, macro_channel_response_buffer);
     if (uart_operation_result != UART_COMM_SUCESS)
     {
         printf("[ERROR] Error when receiving macro channel at command response. Error code: %d\n", uart_operation_result); 
@@ -100,7 +97,7 @@ int check_macro_channels(void)
 
         /* Reset SigFox radio */
         sigfox_comm_format_at_reset_radio(macro_channel_buffer);
-        uart_operation_result = sigfox_comm_uart_send_data(uart_file, macro_channel_buffer, strlen(macro_channel_buffer));
+        uart_operation_result = sigfox_comm_uart_send_data(file_descriptor, macro_channel_buffer, strlen(macro_channel_buffer));
 
         if (uart_operation_result != UART_COMM_SUCESS)
         {
@@ -122,6 +119,7 @@ END_MACRO_CHANNEL:
 
 int main (int argc, char *argv[])
 {
+    int fd = 0;
     int valid_arguments = 0;
     int data_array_size = 0;
     int data_array_size_informed = 0;
@@ -136,7 +134,7 @@ int main (int argc, char *argv[])
     if (valid_arguments < MIN_ARGS_NUMBER)
     {
         printf("\n\n[ERROR] Insuficient arguments. Please, review your command and try again.\n");
-        exit(-1);
+        goto END_SIGFOX_ROUTINE;
     }
 
     memcpy(uart_file, argv[UART_ARG_IDX], strlen(argv[UART_ARG_IDX]) );
@@ -153,29 +151,34 @@ int main (int argc, char *argv[])
 
     memcpy(array_data_size, argv[DATA_ARD_IDX], data_array_size);   
 
+    /* Open and prepare UART */
+    open_and_prepare_uart(uart_file, &fd);
+
     /* Send "AT" command to wake up SIgFox module */
     printf("\n\nWaking-up SigFox module...\n");
     sigfox_comm_format_at_wake_up(at_wakeup_buffer);
-    sigfox_comm_uart_send_data(uart_file, at_wakeup_buffer, strlen(at_wakeup_buffer) );
+    sigfox_comm_uart_send_data(&fd, at_wakeup_buffer, strlen(at_wakeup_buffer) );
     
     printf("\n\nChecking macro channels...\n");
-    if (check_macro_channels() != MACRO_CHANNEL_OK)
+    if (check_macro_channels(&fd) != MACRO_CHANNEL_OK)
     {
         printf("[ERROR] Impossible to check or ensure enough macro channels\n"); 
-        exit(-1); 
+        goto END_SIGFOX_ROUTINE; 
     }
 
     printf("\n\nData to send: %s\nSending data...\n", array_data_size);
     sigfox_comm_format_at_send_data(array_data_size, array_full_at_command);                
-    uart_operation_result = sigfox_comm_uart_send_data(uart_file, array_full_at_command, strlen(array_full_at_command));
+    uart_operation_result = sigfox_comm_uart_send_data(&fd, array_full_at_command, strlen(array_full_at_command));
 
     /* Sending data to SigFox modem */
     if (uart_operation_result != UART_COMM_SUCESS)
     {
         printf("[ERROR] Error when sending data. Error code: %d\n", uart_operation_result); 
-        exit(-1);
+        goto END_SIGFOX_ROUTINE;
     }                    
 
     printf("Data sent successfully!\n\n");
+END_SIGFOX_ROUTINE:
+    close(fd);
     return 0;
 }
